@@ -12,3 +12,4 @@ pillow>=10.0.0
 trimesh>=4.0.5
 mapbox_earcut
 flask>=3.0.0
+gunicorn>=21.2.0
