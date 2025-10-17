@@ -2,10 +2,8 @@ import os
 import time
 import uuid
 from processing import generate_floor_plan
-from flask import Flask, send_file
-from flask import request
+from flask import Flask, send_file, request, jsonify
 from flask_cors import CORS
-
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 app = Flask(__name__)
@@ -36,8 +34,7 @@ def design():
         name = "output"
         res = generate_floor_plan(data, output_name=name)
         # sleep(5)
-        return "res"
-        # return "POST request received. Thank you demon!"
+        return jsonify({"status": "success", "message": "Floor plan generated"})
 
     else:
         return (f"{request.method} requests are not allowed at this endpoint. "
@@ -47,16 +44,19 @@ def design():
 @app.route('/download_model')
 def download_file():
     random_name = str(uuid.uuid4()) + '.gltf'
-    return send_file(r'.\outputs\gltf\output.gltf',
-                     download_name=random_name)
+    # Use forward slashes or os.path.join for cross-platform compatibility
+    file_path = os.path.join('outputs', 'gltf', 'output.gltf')
+    return send_file(file_path, download_name=random_name)
 
 
 @app.route('/download_floor_plan')
 def download_floor_plan():
     random_name = str(uuid.uuid4()) + '.png'
-    return send_file(r'.\outputs\images\output.png',
-                     download_name=random_name)
+    # Use forward slashes or os.path.join for cross-platform compatibility
+    file_path = os.path.join('outputs', 'images', 'output.png')
+    return send_file(file_path, download_name=random_name)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
